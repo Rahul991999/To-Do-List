@@ -106,39 +106,12 @@ const todolistSchema = new mongoose.Schema({
 
 const Todolist = new mongoose.model('Todolist', todolistSchema);
 
-const wakeUp = new Todolist({
-    name: 'Wakeup'
-})
-
-const gym = new Todolist({
-    name: 'GYM'
-})
-
-const library = new Todolist({
-    name: 'Library'
-})
-
-const defaultArr = [wakeUp, gym, library];
-
 app.get('/', function (req, res) {
     Todolist.find(function (err, items) {
         if (err) {
             console.log(err);
         } else {
-            if (items.length === 0) {
-                Todolist.insertMany(defaultArr, function (error) {
-                    if (err) {
-                        console.log(error);
-                    }
-                    else {
-                        console.log('Items added successfully');
-                        res.redirect('/');
-                    }
-                });
-            } else {
-                console.log(items);
-                res.render("listmain", { title: date.getDate(), targets: items });
-            }
+            res.render("listmain", { title: date.getDate(), targets: items });
         }
     })
 
@@ -152,6 +125,18 @@ app.post("/", function (req, res) {
     )).save();
     console.log(req.body)
     res.redirect('/');
+})
+
+app.post('/delete', function (req, res) {
+    Todolist.deleteOne({ _id: req.body.checkbox }, function (err) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log("Deleted successfully");
+            res.redirect('/');
+        }
+    })
 })
 
 app.listen(3000, function () {
